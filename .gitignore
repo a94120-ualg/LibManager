@@ -12,3 +12,6 @@ venv/
 # Cópias de segurança
 *~
 *.bak
+
+# Base de dados local
+*.db
