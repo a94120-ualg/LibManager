@@ -55,3 +55,8 @@ def hoje():
 def somar_dias(data, dias):
     nova_data = datetime.strptime(data, FORMATO_DATA) + timedelta(days=dias)
     return nova_data.strftime(FORMATO_DATA)
+
+def dias_entre(data_inicial, data_final):
+    inicio = datetime.strptime(data_inicial, FORMATO_DATA)
+    fim = datetime.strptime(data_final, FORMATO_DATA)
+    return (fim - inicio).days
