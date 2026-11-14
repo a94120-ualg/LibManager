@@ -22,7 +22,7 @@ def menu_bibliotecario():
         elif opcao == 4:
             multas.menu_atrasos()
         elif opcao != 0:
-            mostrar_erro("opção inválida.")
+            mostrar_erro("Opção inválida.")
 
 
 def menu_socio(numero):
@@ -53,7 +53,7 @@ def menu_socio(numero):
         elif opcao == 7:
             socios.ver_historico_socio(numero)
         elif opcao != 0:
-            mostrar_erro("opção inválida.")
+            mostrar_erro("Opção inválida.")
 
 
 def main():
