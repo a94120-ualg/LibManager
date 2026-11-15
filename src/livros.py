@@ -125,6 +125,18 @@ def pesquisar_por_autor():
     mostrar_livros(livros)
 
 
+def filtrar_por_genero():
+    texto = pedir_texto("Género: ")
+    ligacao = ligar()
+    livros = ligacao.execute(
+        "SELECT * FROM livros WHERE genero LIKE ? ORDER BY titulo",
+        ("%" + texto + "%",)
+    ).fetchall()
+    ligacao.close()
+    mostrar_livros(livros)
+
+
+
 # Gestão dos livros.
 
 def menu_livros():
