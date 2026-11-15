@@ -43,7 +43,24 @@ def exemplares_disponiveis(isbn):
         return 0
     return linha["disponiveis"]
 
+def mostrar_livros(livros):
+    if len(livros) == 0:
+        print("Nenhum livro encontrado.")
+        return
+    print(f"{'ISBN':<16}{'Título':<26}{'Autor':<22}{'Género':<12}Disponíveis")
+    for livro in livros:
+        disponiveis = exemplares_disponiveis(livro["isbn"])
+        print(f"{livro['isbn']:<16}{livro['titulo']:<26}"
+              f"{livro['autor']:<22}{livro['genero']:<12}{disponiveis}")
 
+
+def listar_livros():
+    ligacao = ligar()
+    livros = ligacao.execute("SELECT * FROM livros ORDER BY titulo").fetchall()
+    ligacao.close()
+    mostrar_livros(livros)
+
+    
 # Gestão dos livros.
 
 def menu_livros():
