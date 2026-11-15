@@ -25,6 +25,22 @@ def registar_socio():
     print("Sócio nº " + str(numero) + " registado.")
 
 
+def mostrar_socios(socios):
+    if len(socios) == 0:
+        print("Nenhum sócio encontrado.")
+        return
+    print(f"{'Nº':<8}{'Nome':<26}Contacto")
+    for socio in socios:
+        print(f"{socio['numero']:<8}{socio['nome']:<26}{socio['contacto']}")
+
+
+def listar_socios():
+    ligacao = ligar()
+    socios = ligacao.execute("SELECT * FROM socios ORDER BY nome").fetchall()
+    ligacao.close()
+    mostrar_socios(socios)
+
+    
 def menu_socios():
 # Mostra o menu de sócios do bibliotecário (ainda por implementar).
     print("Em desenvolvimento.")
