@@ -74,7 +74,19 @@ def remover_socio():
         print("Sócio removido.")
     except sqlite3.IntegrityError:
         mostrar_erro("O sócio tem empréstimos, reservas ou multas e não pode ser removido.")
-    ligacao.close()       
+    ligacao.close()  
+
+
+def pesquisar_socio():
+    texto = pedir_texto("Pesquisar (nome ou número): ")
+    ligacao = ligar()
+    socios = ligacao.execute(
+        "SELECT * FROM socios WHERE nome LIKE ? OR CAST(numero AS TEXT) = ? "
+        "ORDER BY nome",
+        ("%" + texto + "%", texto)
+    ).fetchall()
+    ligacao.close()
+    mostrar_socios(socios)         
 
 
 def menu_socios():
