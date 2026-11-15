@@ -104,6 +104,15 @@ def remover_livro():
         mostrar_erro("O livro tem empréstimos ou reservas e não pode ser removido.")
     ligacao.close()
 
+def pesquisar_por_titulo():
+    texto = pedir_texto("Título: ")
+    ligacao = ligar()
+    livros = ligacao.execute(
+        "SELECT * FROM livros WHERE titulo LIKE ? ORDER BY titulo",
+        ("%" + texto + "%",)
+    ).fetchall()
+    ligacao.close()
+    mostrar_livros(livros)
 
     
 # Gestão dos livros.
