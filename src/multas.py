@@ -63,6 +63,32 @@ def gerar_multa(id_emprestimo):
     ligacao.close()
 
 
+def consultar_multas_socio(numero):
+    ligacao = ligar()
+    pendentes = ligacao.execute(
+        "SELECT id, valor FROM multas WHERE socio = ? AND paga = 0", (numero,)
+    ).fetchall()
+    ligacao.close()
+    if len(pendentes) == 0:
+        print("Não tem multas pendentes.")
+        return
+    total = 0
+    for multa in pendentes:
+        print(f"Multa {multa['id']}: {multa['valor']:.2f} €")
+        total = total + multa["valor"]
+    print(f"Total pendente: {total:.2f} €")
+
+
+def socio_tem_multas(numero):
+    ligacao = ligar()
+    linha = ligacao.execute(
+        "SELECT COUNT(*) AS total FROM multas WHERE socio = ? AND paga = 0",
+        (numero,)
+    ).fetchone()
+    ligacao.close()
+    return linha["total"] > 0
+
+
 
 def menu_atrasos():
 # Mostra o menu de atrasos e multas do bibliotecário (ainda por implementar).
