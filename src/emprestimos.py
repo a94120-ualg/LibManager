@@ -102,9 +102,21 @@ def listar_emprestimos_ativos(numero):
     print("Em desenvolvimento.")
 
 
-def pedir_renovacao(numero):
-# Regista um pedido de renovação de um sócio (ainda por implementar).
-    print("Em desenvolvimento.")
+def listar_emprestimos_ativos(numero):
+    ligacao = ligar()
+    consulta = (
+        "SELECT e.id, l.titulo, e.data_prevista "
+        "FROM emprestimos e JOIN livros l ON l.isbn = e.isbn "
+        "WHERE e.socio = ? AND e.estado = 'ativo' ORDER BY e.data_prevista"
+    )
+    ativos = ligacao.execute(consulta, (numero,)).fetchall()
+    ligacao.close()
+    if len(ativos) == 0:
+        print("Não tem empréstimos ativos.")
+        return
+    for ativo in ativos:
+        print(f"{ativo['id']:<6}{ativo['titulo']:<26}"
+              f"devolver até {ativo['data_prevista']}")
 
 
 def ver_pedidos_socio(numero):
