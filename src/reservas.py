@@ -1,6 +1,6 @@
 from src import livros
 from src.bd import ligar
-from src.utils import pedir_texto, hoje, mostrar_erro
+from src.utils import pedir_texto, hoje, mostrar_erro, pedir_inteiro
 
 
 def reservar_livro(numero):
@@ -43,5 +43,16 @@ def cancelar_reserva(numero):
 
 
 def menu_reservas(numero):
-# Mostra o menu de reservas de um sócio (ainda por implementar).
-    print("Em desenvolvimento.")
+    opcao = -1
+    while opcao != 0:
+        print("\n=== Reservas ===")
+        print("1. Reservar")
+        print("2. Cancelar reserva")
+        print("0. Voltar")
+        opcao = pedir_inteiro("Opção: ")
+        if opcao == 1:
+            reservar_livro(numero)
+        elif opcao == 2:
+            cancelar_reserva(numero)
+        elif opcao != 0:
+            mostrar_erro("Opção inválida.")
