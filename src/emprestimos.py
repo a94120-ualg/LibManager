@@ -119,6 +119,24 @@ def listar_emprestimos_ativos(numero):
               f"devolver até {ativo['data_prevista']}")
 
 
+
+def definir_limite_socio():
+    numero = pedir_inteiro("Nº de sócio: ")
+    socio = socios.procurar_socio(numero)
+    if socio is None:
+        mostrar_erro("Sócio não encontrado.")
+        return
+    print("Limite atual: " + str(socio["limite_livros"]))
+    limite = pedir_inteiro("Novo limite: ")
+    ligacao = ligar()
+    ligacao.execute(
+        "UPDATE socios SET limite_livros = ? WHERE numero = ?", (limite, numero)
+    )
+    ligacao.commit()
+    ligacao.close()
+    print("Limite atualizado.")
+
+
 def ver_pedidos_socio(numero):
 # Mostra o estado dos pedidos de renovação de um sócio (ainda por implementar).
     print("Em desenvolvimento.")
