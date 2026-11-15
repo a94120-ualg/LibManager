@@ -1,5 +1,6 @@
 from src.bd import ligar
 from src.utils import pedir_texto
+from src.utils import pedir_texto, pedir_texto_ou_manter, pedir_inteiro, mostrar_erro
 
 def procurar_socio(numero):
     ligacao = ligar()
@@ -40,7 +41,25 @@ def listar_socios():
     ligacao.close()
     mostrar_socios(socios)
 
-    
+
+def editar_socio():
+    numero = pedir_inteiro("Nº de sócio: ")
+    socio = procurar_socio(numero)
+    if socio is None:
+        mostrar_erro("Sócio não encontrado.")
+        return
+    nome = pedir_texto_ou_manter("Nome", socio["nome"])
+    contacto = pedir_texto_ou_manter("Contacto", socio["contacto"])
+    ligacao = ligar()
+    ligacao.execute(
+        "UPDATE socios SET nome = ?, contacto = ? WHERE numero = ?",
+        (nome, contacto, numero)
+    )
+    ligacao.commit()
+    ligacao.close()
+    print("Sócio atualizado.")    
+
+
 def menu_socios():
 # Mostra o menu de sócios do bibliotecário (ainda por implementar).
     print("Em desenvolvimento.")
