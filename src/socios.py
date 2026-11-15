@@ -1,7 +1,7 @@
 from src.bd import ligar
 from src.utils import pedir_texto
-from src.utils import pedir_texto, pedir_texto_ou_manter, pedir_inteiro, mostrar_erro
-
+from src.utils import pedir_texto, pedir_texto_ou_manter, pedir_inteiro, mostrar_erro, confirmar
+import sqlite3
 def procurar_socio(numero):
     ligacao = ligar()
     socio = ligacao.execute(
@@ -57,7 +57,24 @@ def editar_socio():
     )
     ligacao.commit()
     ligacao.close()
-    print("Sócio atualizado.")    
+    print("Sócio atualizado.") 
+
+def remover_socio():
+    numero = pedir_inteiro("Nº de sócio: ")
+    socio = procurar_socio(numero)
+    if socio is None:
+        mostrar_erro("Sócio não encontrado.")
+        return
+    if not confirmar('Remover "' + socio["nome"] + '"?'):
+        return
+    ligacao = ligar()
+    try:
+        ligacao.execute("DELETE FROM socios WHERE numero = ?", (numero,))
+        ligacao.commit()
+        print("Sócio removido.")
+    except sqlite3.IntegrityError:
+        mostrar_erro("O sócio tem empréstimos, reservas ou multas e não pode ser removido.")
+    ligacao.close()       
 
 
 def menu_socios():
