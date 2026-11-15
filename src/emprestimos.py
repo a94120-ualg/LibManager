@@ -1,5 +1,6 @@
 # Gestão de empréstimos e pedidos de renovação.
-from src.base_dados import ligar
+from src.bd import ligar
+from src import livros, socios, multas
 
 PRAZO_DIAS = 14
 
@@ -14,7 +15,7 @@ def contar_emprestimos_ativos(numero):
 
 
 from src import livros, socios
-from src.base_dados import ligar
+from src.bd import ligar
 from src.utils import pedir_texto, pedir_inteiro, hoje, somar_dias, mostrar_erro
 
 
@@ -23,6 +24,9 @@ def registar_emprestimo():
     socio = socios.procurar_socio(numero)
     if socio is None:
         mostrar_erro("Sócio não encontrado.")
+        return
+    if multas.socio_tem_multas(numero):
+        mostrar_erro("O sócio tem multas por pagar. Empréstimo não permitido.")
         return
     isbn = pedir_texto("ISBN: ")
     if livros.procurar_livro(isbn) is None:
@@ -72,7 +76,7 @@ def registar_devolucao():
     ligacao.commit()
     ligacao.close()
     print("Devolução registada. O livro está novamente disponível.")
-
+    multas.gerar_multa(emprestimo["id"])
 
 
 def cancelar_emprestimo():
