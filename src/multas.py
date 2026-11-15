@@ -1,5 +1,5 @@
 from src.bd import ligar
-from src.utils import hoje, dias_entre
+from src.utils import hoje, dias_entre, pedir_inteiro, mostrar_erro
 
 TAXA_DIARIA = 0.10
 
@@ -87,6 +87,27 @@ def socio_tem_multas(numero):
     ).fetchone()
     ligacao.close()
     return linha["total"] > 0
+
+def registar_pagamento():
+    numero = pedir_inteiro("Nº de sócio: ")
+    if not socio_tem_multas(numero):
+        print("O sócio não tem multas por pagar.")
+        return
+    consultar_multas_socio(numero)
+    id_multa = pedir_inteiro("Nº da multa a pagar (0 para voltar): ")
+    if id_multa == 0:
+        return
+    ligacao = ligar()
+    cursor = ligacao.execute(
+        "UPDATE multas SET paga = 1 WHERE id = ? AND socio = ? AND paga = 0",
+        (id_multa, numero)
+    )
+    ligacao.commit()
+    ligacao.close()
+    if cursor.rowcount == 0:
+        mostrar_erro("Multa não encontrada.")
+    else:
+        print("Pagamento registado.")
 
 
 
