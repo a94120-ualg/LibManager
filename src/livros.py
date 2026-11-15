@@ -1,3 +1,16 @@
+from src.bd import ligar
+
+def procurar_livro(isbn):
+    ligacao = ligar()
+    livro = ligacao.execute(
+        "SELECT * FROM livros WHERE isbn = ?", (isbn,)
+    ).fetchone()
+    ligacao.close()
+    return livro
+
+
+
+
 # Gestão dos livros.
 
 def menu_livros():
