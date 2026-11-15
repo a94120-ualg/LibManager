@@ -23,7 +23,6 @@ def procurar_atrasos():
 
 
 def listar_atrasos():
-    """Mostra os empréstimos em atraso."""
     atrasos = procurar_atrasos()
     if len(atrasos) == 0:
         print("Não há empréstimos em atraso.")
@@ -34,6 +33,19 @@ def listar_atrasos():
         print(f"{atraso['socio']:<8}{atraso['titulo']:<26}"
               f"{atraso['data_prevista']:<12}{dias}")
 
+
+
+def calcular_multas():
+    atrasos = procurar_atrasos()
+    if len(atrasos) == 0:
+        print("Não há empréstimos em atraso.")
+        return
+    for atraso in atrasos:
+        dias = dias_entre(atraso["data_prevista"], hoje())
+        valor = calcular_multa(dias)
+        print(f"Sócio {atraso['socio']}: {dias} dias x {TAXA_DIARIA:.2f} € "
+              f"= {valor:.2f} €")
+        
 
 def menu_atrasos():
 # Mostra o menu de atrasos e multas do bibliotecário (ainda por implementar).
