@@ -1,4 +1,12 @@
-# Gestão dos sócios.
+from src.bd import ligar
+
+def procurar_socio(numero):
+    ligacao = ligar()
+    socio = ligacao.execute(
+        "SELECT * FROM socios WHERE numero = ?", (numero,)
+    ).fetchone()
+    ligacao.close()
+    return socio
 
 
 def menu_socios():
