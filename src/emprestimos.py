@@ -1,5 +1,6 @@
 # Gestão de empréstimos e pedidos de renovação.
 from src.bd import ligar
+from src import livros, socios, multas
 
 PRAZO_DIAS = 14
 
@@ -72,7 +73,7 @@ def registar_devolucao():
     ligacao.commit()
     ligacao.close()
     print("Devolução registada. O livro está novamente disponível.")
-
+    multas.gerar_multa(emprestimo["id"])
 
 
 def cancelar_emprestimo():

@@ -46,6 +46,23 @@ def calcular_multas():
         print(f"Sócio {atraso['socio']}: {dias} dias x {TAXA_DIARIA:.2f} € "
               f"= {valor:.2f} €")
         
+def gerar_multa(id_emprestimo):
+    ligacao = ligar()
+    emprestimo = ligacao.execute(
+        "SELECT * FROM emprestimos WHERE id = ?", (id_emprestimo,)
+    ).fetchone()
+    dias = dias_entre(emprestimo["data_prevista"], emprestimo["data_devolucao"])
+    if dias > 0:
+        valor = calcular_multa(dias)
+        ligacao.execute(
+            "INSERT INTO multas (emprestimo, socio, valor) VALUES (?, ?, ?)",
+            (id_emprestimo, emprestimo["socio"], valor)
+        )
+        ligacao.commit()
+        print(f"Devolução com {dias} dias de atraso. Multa: {valor:.2f} €.")
+    ligacao.close()
+
+
 
 def menu_atrasos():
 # Mostra o menu de atrasos e multas do bibliotecário (ainda por implementar).
