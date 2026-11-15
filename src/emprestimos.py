@@ -1,5 +1,5 @@
 # Gestão de empréstimos e pedidos de renovação.
-from src.base_dados import ligar
+from src.bd import ligar
 
 PRAZO_DIAS = 14
 
@@ -14,7 +14,7 @@ def contar_emprestimos_ativos(numero):
 
 
 from src import livros, socios
-from src.base_dados import ligar
+from src.bd import ligar
 from src.utils import pedir_texto, pedir_inteiro, hoje, somar_dias, mostrar_erro
 
 

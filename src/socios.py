@@ -2,6 +2,7 @@ from src.bd import ligar
 from src.utils import pedir_texto
 from src.utils import pedir_texto, pedir_texto_ou_manter, pedir_inteiro, mostrar_erro, confirmar
 import sqlite3
+
 def procurar_socio(numero):
     ligacao = ligar()
     socio = ligacao.execute(
