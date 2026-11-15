@@ -36,3 +36,19 @@ def criar_bibliotecario_por_defeito():
         )
         ligacao.commit()
     ligacao.close()
+
+
+def verificar_credenciais(perfil, numero, palavra_passe):
+    ligacao = ligar()
+    if perfil == "bibliotecario":
+        utilizador = ligacao.execute(
+            "SELECT numero FROM bibliotecarios "
+            "WHERE numero = ? AND palavra_passe = ?", (numero, palavra_passe)
+        ).fetchone()
+    else:
+        utilizador = ligacao.execute(
+            "SELECT numero FROM socios WHERE numero = ? AND palavra_passe = ?",
+            (numero, palavra_passe)
+        ).fetchone()
+    ligacao.close()
+    return utilizador is not None
