@@ -93,8 +93,25 @@ def cancelar_emprestimo():
 
 
 def menu_emprestimos():
-# Mostra o menu de empréstimos do bibliotecário (ainda por implementar).
-    print("Em desenvolvimento.")
+    opcao = -1
+    while opcao != 0:
+        print("\n=== Empréstimos ===")
+        print("1. Registar")
+        print("2. Devolver")
+        print("3. Cancelar")
+        print("4. Definir limite por sócio")
+        print("0. Voltar")
+        opcao = pedir_inteiro("Opção: ")
+        if opcao == 1:
+            registar_emprestimo()
+        elif opcao == 2:
+            registar_devolucao()
+        elif opcao == 3:
+            cancelar_emprestimo()
+        elif opcao == 4:
+            definir_limite_socio()
+        elif opcao != 0:
+            mostrar_erro("Opção inválida.")
 
 
 def listar_emprestimos_ativos(numero):
