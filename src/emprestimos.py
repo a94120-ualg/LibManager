@@ -73,7 +73,25 @@ def registar_devolucao():
     ligacao.close()
     print("Devolução registada. O livro está novamente disponível.")
 
-    
+
+
+def cancelar_emprestimo():
+    isbn = pedir_texto("ISBN: ")
+    numero = pedir_inteiro("Nº de sócio: ")
+    emprestimo = procurar_emprestimo_ativo(isbn, numero)
+    if emprestimo is None:
+        mostrar_erro("Não existe um empréstimo ativo desse livro para esse sócio.")
+        return
+    ligacao = ligar()
+    ligacao.execute(
+        "UPDATE emprestimos SET estado = 'cancelado' WHERE id = ?",
+        (emprestimo["id"],)
+    )
+    ligacao.commit()
+    ligacao.close()
+    print("Empréstimo cancelado.")
+
+
 def menu_emprestimos():
 # Mostra o menu de empréstimos do bibliotecário (ainda por implementar).
     print("Em desenvolvimento.")
