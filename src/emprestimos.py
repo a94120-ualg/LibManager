@@ -47,6 +47,33 @@ def registar_emprestimo():
 
 
 
+def procurar_emprestimo_ativo(isbn, numero):
+    ligacao = ligar()
+    emprestimo = ligacao.execute(
+        "SELECT * FROM emprestimos "
+        "WHERE isbn = ? AND socio = ? AND estado = 'ativo'", (isbn, numero)
+    ).fetchone()
+    ligacao.close()
+    return emprestimo
+
+
+def registar_devolucao():
+    isbn = pedir_texto("ISBN: ")
+    numero = pedir_inteiro("Nº de sócio: ")
+    emprestimo = procurar_emprestimo_ativo(isbn, numero)
+    if emprestimo is None:
+        mostrar_erro("Não existe um empréstimo ativo desse livro para esse sócio.")
+        return
+    ligacao = ligar()
+    ligacao.execute(
+        "UPDATE emprestimos SET estado = 'devolvido', data_devolucao = ? "
+        "WHERE id = ?", (hoje(), emprestimo["id"])
+    )
+    ligacao.commit()
+    ligacao.close()
+    print("Devolução registada. O livro está novamente disponível.")
+
+    
 def menu_emprestimos():
 # Mostra o menu de empréstimos do bibliotecário (ainda por implementar).
     print("Em desenvolvimento.")
