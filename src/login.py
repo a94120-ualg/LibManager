@@ -1,8 +1,10 @@
 #codigo ainda provisório
 from src.utils import pedir_inteiro, mostrar_erro
+from src.bd import ligar
 
 
 def iniciar_sessao():
+    ligar()
 
     while True:
         print("\n=== LibManager ===")
@@ -19,3 +21,18 @@ def iniciar_sessao():
         elif opcao == 0:
             return None
         mostrar_erro("Opção inválida.")
+
+
+
+def criar_bibliotecario_por_defeito():
+    ligacao = ligar()
+    linha = ligacao.execute(
+        "SELECT COUNT(*) AS total FROM bibliotecarios"
+    ).fetchone()
+    if linha["total"] == 0:
+        ligacao.execute(
+            "INSERT INTO bibliotecarios (numero, nome, palavra_passe) "
+            "VALUES (1, 'Administrador', 'admin')"
+        )
+        ligacao.commit()
+    ligacao.close()
