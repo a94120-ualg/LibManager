@@ -1,9 +1,117 @@
 # Gestão de empréstimos e pedidos de renovação.
+from src.base_dados import ligar
+
+PRAZO_DIAS = 14
+
+def contar_emprestimos_ativos(numero):
+    ligacao = ligar()
+    linha = ligacao.execute(
+        "SELECT COUNT(*) AS total FROM emprestimos "
+        "WHERE socio = ? AND estado = 'ativo'", (numero,)
+    ).fetchone()
+    ligacao.close()
+    return linha["total"]
+
+
+from src import livros, socios
+from src.base_dados import ligar
+from src.utils import pedir_texto, pedir_inteiro, hoje, somar_dias, mostrar_erro
+
+
+def registar_emprestimo():
+    numero = pedir_inteiro("Nº de sócio: ")
+    socio = socios.procurar_socio(numero)
+    if socio is None:
+        mostrar_erro("Sócio não encontrado.")
+        return
+    isbn = pedir_texto("ISBN: ")
+    if livros.procurar_livro(isbn) is None:
+        mostrar_erro("Livro não encontrado.")
+        return
+    if livros.exemplares_disponiveis(isbn) == 0:
+        mostrar_erro("Não há exemplares disponíveis.")
+        return
+    if contar_emprestimos_ativos(numero) >= socio["limite_livros"]:
+        mostrar_erro("O sócio atingiu o limite de livros.")
+        return
+    data_emprestimo = hoje()
+    data_prevista = somar_dias(data_emprestimo, PRAZO_DIAS)
+    ligacao = ligar()
+    ligacao.execute(
+        "INSERT INTO emprestimos (isbn, socio, data_emprestimo, data_prevista) "
+        "VALUES (?, ?, ?, ?)", (isbn, numero, data_emprestimo, data_prevista)
+    )
+    ligacao.commit()
+    ligacao.close()
+    print("Empréstimo registado. Devolução até " + data_prevista + ".")
+
+
+
+def procurar_emprestimo_ativo(isbn, numero):
+    ligacao = ligar()
+    emprestimo = ligacao.execute(
+        "SELECT * FROM emprestimos "
+        "WHERE isbn = ? AND socio = ? AND estado = 'ativo'", (isbn, numero)
+    ).fetchone()
+    ligacao.close()
+    return emprestimo
+
+
+def registar_devolucao():
+    isbn = pedir_texto("ISBN: ")
+    numero = pedir_inteiro("Nº de sócio: ")
+    emprestimo = procurar_emprestimo_ativo(isbn, numero)
+    if emprestimo is None:
+        mostrar_erro("Não existe um empréstimo ativo desse livro para esse sócio.")
+        return
+    ligacao = ligar()
+    ligacao.execute(
+        "UPDATE emprestimos SET estado = 'devolvido', data_devolucao = ? "
+        "WHERE id = ?", (hoje(), emprestimo["id"])
+    )
+    ligacao.commit()
+    ligacao.close()
+    print("Devolução registada. O livro está novamente disponível.")
+
+
+
+def cancelar_emprestimo():
+    isbn = pedir_texto("ISBN: ")
+    numero = pedir_inteiro("Nº de sócio: ")
+    emprestimo = procurar_emprestimo_ativo(isbn, numero)
+    if emprestimo is None:
+        mostrar_erro("Não existe um empréstimo ativo desse livro para esse sócio.")
+        return
+    ligacao = ligar()
+    ligacao.execute(
+        "UPDATE emprestimos SET estado = 'cancelado' WHERE id = ?",
+        (emprestimo["id"],)
+    )
+    ligacao.commit()
+    ligacao.close()
+    print("Empréstimo cancelado.")
 
 
 def menu_emprestimos():
-# Mostra o menu de empréstimos do bibliotecário (ainda por implementar).
-    print("Em desenvolvimento.")
+    opcao = -1
+    while opcao != 0:
+        print("\n=== Empréstimos ===")
+        print("1. Registar")
+        print("2. Devolver")
+        print("3. Cancelar")
+        print("4. Definir limite por sócio")
+        print("0. Voltar")
+        opcao = pedir_inteiro("Opção: ")
+        if opcao == 1:
+            registar_emprestimo()
+        elif opcao == 2:
+            registar_devolucao()
+        elif opcao == 3:
+            cancelar_emprestimo()
+        elif opcao == 4:
+            definir_limite_socio()
+        elif opcao != 0:
+            mostrar_erro("Opção inválida.")
 
 
 def listar_emprestimos_ativos(numero):
@@ -11,9 +119,39 @@ def listar_emprestimos_ativos(numero):
     print("Em desenvolvimento.")
 
 
-def pedir_renovacao(numero):
-# Regista um pedido de renovação de um sócio (ainda por implementar).
-    print("Em desenvolvimento.")
+def listar_emprestimos_ativos(numero):
+    ligacao = ligar()
+    consulta = (
+        "SELECT e.id, l.titulo, e.data_prevista "
+        "FROM emprestimos e JOIN livros l ON l.isbn = e.isbn "
+        "WHERE e.socio = ? AND e.estado = 'ativo' ORDER BY e.data_prevista"
+    )
+    ativos = ligacao.execute(consulta, (numero,)).fetchall()
+    ligacao.close()
+    if len(ativos) == 0:
+        print("Não tem empréstimos ativos.")
+        return
+    for ativo in ativos:
+        print(f"{ativo['id']:<6}{ativo['titulo']:<26}"
+              f"devolver até {ativo['data_prevista']}")
+
+
+
+def definir_limite_socio():
+    numero = pedir_inteiro("Nº de sócio: ")
+    socio = socios.procurar_socio(numero)
+    if socio is None:
+        mostrar_erro("Sócio não encontrado.")
+        return
+    print("Limite atual: " + str(socio["limite_livros"]))
+    limite = pedir_inteiro("Novo limite: ")
+    ligacao = ligar()
+    ligacao.execute(
+        "UPDATE socios SET limite_livros = ? WHERE numero = ?", (limite, numero)
+    )
+    ligacao.commit()
+    ligacao.close()
+    print("Limite atualizado.")
 
 
 def ver_pedidos_socio(numero):
