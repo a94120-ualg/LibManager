@@ -90,8 +90,28 @@ def pesquisar_socio():
 
 
 def menu_socios():
-# Mostra o menu de sócios do bibliotecário (ainda por implementar).
-    print("Em desenvolvimento.")
+    opcao = -1
+    while opcao != 0:
+        print("\n=== Sócios ===")
+        print("1. Registar")
+        print("2. Editar")
+        print("3. Remover")
+        print("4. Pesquisar")
+        print("5. Listar")
+        print("0. Voltar")
+        opcao = pedir_inteiro("Opção: ")
+        if opcao == 1:
+            registar_socio()
+        elif opcao == 2:
+            editar_socio()
+        elif opcao == 3:
+            remover_socio()
+        elif opcao == 4:
+            pesquisar_socio()
+        elif opcao == 5:
+            listar_socios()
+        elif opcao != 0:
+            mostrar_erro("Opção inválida.")
 
 
 def ver_historico_socio(numero):
