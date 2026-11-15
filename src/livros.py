@@ -1,5 +1,7 @@
 from src.bd import ligar
 from src.utils import pedir_texto, pedir_texto_ou_manter , pedir_inteiro, mostrar_erro
+import sqlite3
+from src.utils import confirmar
 
 def procurar_livro(isbn):
     ligacao = ligar()
@@ -82,6 +84,26 @@ def editar_livro():
     ligacao.commit()
     ligacao.close()
     print("Livro atualizado.")
+
+
+
+def remover_livro():
+    isbn = pedir_texto("ISBN do livro a remover: ")
+    livro = procurar_livro(isbn)
+    if livro is None:
+        mostrar_erro("Livro não encontrado.")
+        return
+    if not confirmar('Remover "' + livro["titulo"] + '"?'):
+        return
+    ligacao = ligar()
+    try:
+        ligacao.execute("DELETE FROM livros WHERE isbn = ?", (isbn,))
+        ligacao.commit()
+        print("Livro removido.")
+    except sqlite3.IntegrityError:
+        mostrar_erro("O livro tem empréstimos ou reservas e não pode ser removido.")
+    ligacao.close()
+
 
     
 # Gestão dos livros.
