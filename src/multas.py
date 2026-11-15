@@ -110,12 +110,21 @@ def registar_pagamento():
         print("Pagamento registado.")
 
 
-
 def menu_atrasos():
-# Mostra o menu de atrasos e multas do bibliotecário (ainda por implementar).
-    print("Em desenvolvimento.")
-
-
-def consultar_multas_socio(numero):
-# Mostra as multas pendentes de um sócio (ainda por implementar).
-    print("Em desenvolvimento.")
+    """Mostra o menu de atrasos e multas do bibliotecário."""
+    opcao = -1
+    while opcao != 0:
+        print("\n=== Atrasos e multas ===")
+        print("1. Listar atrasos")
+        print("2. Calcular multas")
+        print("3. Registar pagamento")
+        print("0. Voltar")
+        opcao = pedir_inteiro("Opção: ")
+        if opcao == 1:
+            listar_atrasos()
+        elif opcao == 2:
+            calcular_multas()
+        elif opcao == 3:
+            registar_pagamento()
+        elif opcao != 0:
+            mostrar_erro("Opção inválida.")
