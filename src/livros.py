@@ -114,7 +114,17 @@ def pesquisar_por_titulo():
     ligacao.close()
     mostrar_livros(livros)
 
-    
+def pesquisar_por_autor():
+    texto = pedir_texto("Autor: ")
+    ligacao = ligar()
+    livros = ligacao.execute(
+        "SELECT * FROM livros WHERE autor LIKE ? ORDER BY titulo",
+        ("%" + texto + "%",)
+    ).fetchall()
+    ligacao.close()
+    mostrar_livros(livros)
+
+
 # Gestão dos livros.
 
 def menu_livros():
