@@ -140,10 +140,41 @@ def filtrar_por_genero():
 # Gestão dos livros.
 
 def menu_livros():
-# Mostra o menu de livros do bibliotecário (ainda por implementar).
-    print("Em desenvolvimento.")
+    opcao = -1
+    while opcao != 0:
+        print("\n=== Livros ===")
+        print("1. Adicionar")
+        print("2. Editar")
+        print("3. Remover")
+        print("4. Listar")
+        print("0. Voltar")
+        opcao = pedir_inteiro("Opção: ")
+        if opcao == 1:
+            adicionar_livro()
+        elif opcao == 2:
+            editar_livro()
+        elif opcao == 3:
+            remover_livro()
+        elif opcao == 4:
+            listar_livros()
+        elif opcao != 0:
+            mostrar_erro("Opção inválida.")
 
 
 def menu_pesquisa():
-# Mostra o menu de pesquisa de livros do sócio (ainda por implementar).
-    print("Em desenvolvimento.")
+    opcao = -1
+    while opcao != 0:
+        print("\n=== Pesquisar livros ===")
+        print("1. Por título")
+        print("2. Por autor")
+        print("3. Por género")
+        print("0. Voltar")
+        opcao = pedir_inteiro("Opção: ")
+        if opcao == 1:
+            pesquisar_por_titulo()
+        elif opcao == 2:
+            pesquisar_por_autor()
+        elif opcao == 3:
+            filtrar_por_genero()
+        elif opcao != 0:
+            mostrar_erro("Opção inválida.")
