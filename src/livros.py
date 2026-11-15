@@ -1,5 +1,5 @@
 from src.bd import ligar
-from src.utils import pedir_texto, pedir_inteiro, mostrar_erro
+from src.utils import pedir_texto, pedir_texto_ou_manter , pedir_inteiro, mostrar_erro
 
 def procurar_livro(isbn):
     ligacao = ligar()
@@ -59,6 +59,29 @@ def listar_livros():
     livros = ligacao.execute("SELECT * FROM livros ORDER BY titulo").fetchall()
     ligacao.close()
     mostrar_livros(livros)
+
+def editar_livro():
+    isbn = pedir_texto("ISBN do livro a editar: ")
+    livro = procurar_livro(isbn)
+    if livro is None:
+        mostrar_erro("Livro não encontrado.")
+        return
+    titulo = pedir_texto_ou_manter("Título", livro["titulo"])
+    autor = pedir_texto_ou_manter("Autor", livro["autor"])
+    genero = pedir_texto_ou_manter("Género", livro["genero"])
+    ano = pedir_inteiro("Ano (atual " + str(livro["ano"]) + "): ")
+    exemplares = pedir_inteiro(
+        "Exemplares (atual " + str(livro["exemplares"]) + "): "
+    )
+    ligacao = ligar()
+    ligacao.execute(
+        "UPDATE livros SET titulo = ?, autor = ?, genero = ?, ano = ?, "
+        "exemplares = ? WHERE isbn = ?",
+        (titulo, autor, genero, ano, exemplares, isbn)
+    )
+    ligacao.commit()
+    ligacao.close()
+    print("Livro atualizado.")
 
     
 # Gestão dos livros.
