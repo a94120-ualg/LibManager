@@ -12,6 +12,41 @@ def contar_emprestimos_ativos(numero):
     ligacao.close()
     return linha["total"]
 
+
+from src import livros, socios
+from src.base_dados import ligar
+from src.utils import pedir_texto, pedir_inteiro, hoje, somar_dias, mostrar_erro
+
+
+def registar_emprestimo():
+    numero = pedir_inteiro("Nº de sócio: ")
+    socio = socios.procurar_socio(numero)
+    if socio is None:
+        mostrar_erro("Sócio não encontrado.")
+        return
+    isbn = pedir_texto("ISBN: ")
+    if livros.procurar_livro(isbn) is None:
+        mostrar_erro("Livro não encontrado.")
+        return
+    if livros.exemplares_disponiveis(isbn) == 0:
+        mostrar_erro("Não há exemplares disponíveis.")
+        return
+    if contar_emprestimos_ativos(numero) >= socio["limite_livros"]:
+        mostrar_erro("O sócio atingiu o limite de livros.")
+        return
+    data_emprestimo = hoje()
+    data_prevista = somar_dias(data_emprestimo, PRAZO_DIAS)
+    ligacao = ligar()
+    ligacao.execute(
+        "INSERT INTO emprestimos (isbn, socio, data_emprestimo, data_prevista) "
+        "VALUES (?, ?, ?, ?)", (isbn, numero, data_emprestimo, data_prevista)
+    )
+    ligacao.commit()
+    ligacao.close()
+    print("Empréstimo registado. Devolução até " + data_prevista + ".")
+
+
+
 def menu_emprestimos():
 # Mostra o menu de empréstimos do bibliotecário (ainda por implementar).
     print("Em desenvolvimento.")
