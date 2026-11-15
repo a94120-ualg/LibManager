@@ -27,6 +27,20 @@ def reservar_livro(numero):
     ligacao.close()
     print("Livro reservado.")
 
+def cancelar_reserva(numero):
+    isbn = pedir_texto("ISBN: ")
+    ligacao = ligar()
+    cursor = ligacao.execute(
+        "DELETE FROM reservas WHERE isbn = ? AND socio = ?", (isbn, numero)
+    )
+    ligacao.commit()
+    ligacao.close()
+    if cursor.rowcount == 0:
+        mostrar_erro("Não tem nenhuma reserva desse livro.")
+    else:
+        print("Reserva cancelada.")
+
+
 
 def menu_reservas(numero):
 # Mostra o menu de reservas de um sócio (ainda por implementar).
