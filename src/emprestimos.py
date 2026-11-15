@@ -25,6 +25,9 @@ def registar_emprestimo():
     if socio is None:
         mostrar_erro("Sócio não encontrado.")
         return
+    if multas.socio_tem_multas(numero):
+        mostrar_erro("O sócio tem multas por pagar. Empréstimo não permitido.")
+        return
     isbn = pedir_texto("ISBN: ")
     if livros.procurar_livro(isbn) is None:
         mostrar_erro("Livro não encontrado.")
