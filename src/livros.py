@@ -29,6 +29,19 @@ def adicionar_livro():
     ligacao.close()
     print("Livro adicionado com sucesso.")
 
+def exemplares_disponiveis(isbn):
+    ligacao = ligar()
+    consulta = (
+        "SELECT l.exemplares - COUNT(e.id) AS disponiveis "
+        "FROM livros l LEFT JOIN emprestimos e "
+        "ON e.isbn = l.isbn AND e.estado = 'ativo' "
+        "WHERE l.isbn = ? GROUP BY l.isbn"
+    )
+    linha = ligacao.execute(consulta, (isbn,)).fetchone()
+    ligacao.close()
+    if linha is None:
+        return 0
+    return linha["disponiveis"]
 
 
 # Gestão dos livros.
