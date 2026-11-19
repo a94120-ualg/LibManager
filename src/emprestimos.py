@@ -16,6 +16,38 @@ def contar_emprestimos_ativos(numero):
     return linha["total"]
 
 
+def pedir_renovacao(numero):
+    listar_emprestimos_ativos(numero)
+    id_emprestimo = pedir_inteiro("Nº do empréstimo a renovar (0 para voltar): ")
+    if id_emprestimo == 0:
+        return
+    ligacao = ligar()
+    emprestimo = ligacao.execute(
+        "SELECT id FROM emprestimos "
+        "WHERE id = ? AND socio = ? AND estado = 'ativo'",
+        (id_emprestimo, numero)
+    ).fetchone()
+    if emprestimo is None:
+        ligacao.close()
+        mostrar_erro("Empréstimo não encontrado.")
+        return
+    pendente = ligacao.execute(
+        "SELECT id FROM pedidos_renovacao "
+        "WHERE emprestimo = ? AND estado = 'pendente'", (id_emprestimo,)
+    ).fetchone()
+    if pendente is not None:
+        ligacao.close()
+        mostrar_erro("Já existe um pedido pendente para este empréstimo.")
+        return
+    ligacao.execute(
+        "INSERT INTO pedidos_renovacao (emprestimo, data_pedido) VALUES (?, ?)",
+        (id_emprestimo, hoje())
+    )
+    ligacao.commit()
+    ligacao.close()
+    print("Pedido enviado. Aguarde a resposta do bibliotecário.")
+
+
 
 def registar_emprestimo():
     numero = pedir_inteiro("Nº de sócio: ")
