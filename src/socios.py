@@ -116,6 +116,20 @@ def menu_socios():
 
 
 def ver_historico_socio(numero):
-# Mostra o histórico de leituras de um sócio (ainda por implementar).
-
-    print("Em desenvolvimento.")
+    ligacao = ligar()
+    consulta = (
+        "SELECT l.titulo, e.data_emprestimo, e.data_devolucao, e.estado "
+        "FROM emprestimos e JOIN livros l ON l.isbn = e.isbn "
+        "WHERE e.socio = ? ORDER BY e.data_emprestimo DESC"
+    )
+    historico = ligacao.execute(consulta, (numero,)).fetchall()
+    ligacao.close()
+    if len(historico) == 0:
+        print("Ainda não requisitou nenhum livro.")
+        return
+    for registo in historico:
+        devolucao = registo["data_devolucao"]
+        if devolucao is None:
+            devolucao = "em curso"
+        print(f"{registo['titulo']:<26}{registo['data_emprestimo']} - "
+              f"{devolucao} ({registo['estado']})")
