@@ -178,3 +178,32 @@ def menu_pesquisa():
             filtrar_por_genero()
         elif opcao != 0:
             mostrar_erro("Opção inválida.")
+
+
+
+def ver_historico_livro():
+    isbn = pedir_texto("ISBN do livro: ")
+    livro = procurar_livro(isbn)
+    if livro is None:
+        mostrar_erro("livro não encontrado.")
+        return
+    ligacao = ligar()
+    consulta = (
+        "SELECT s.nome, e.data_emprestimo, e.data_devolucao, e.estado "
+        "FROM emprestimos e JOIN socios s ON s.numero = e.socio "
+        "WHERE e.isbn = ? ORDER BY e.data_emprestimo DESC"
+    )
+    historico = ligacao.execute(consulta, (isbn,)).fetchall()
+    ligacao.close()
+    if len(historico) == 0:
+        print("Este livro ainda não tem empréstimos.")
+        return
+    print('Histórico de "' + livro["titulo"] + '":')
+    for registo in historico:
+        devolucao = registo["data_devolucao"]
+        if devolucao is None:
+            devolucao = "em curso"
+        print(f"{registo['nome']:<20}{registo['data_emprestimo']} - "
+              f"{devolucao} ({registo['estado']})")	
+
+
