@@ -184,5 +184,21 @@ def definir_limite_socio():
 
 
 def ver_pedidos_socio(numero):
-# Mostra o estado dos pedidos de renovação de um sócio (ainda por implementar).
-    print("Em desenvolvimento.")
+    ligacao = ligar()
+    consulta = (
+        "SELECT l.titulo, p.estado, e.data_prevista "
+        "FROM pedidos_renovacao p "
+        "JOIN emprestimos e ON e.id = p.emprestimo "
+        "JOIN livros l ON l.isbn = e.isbn "
+        "WHERE e.socio = ? ORDER BY p.id DESC"
+    )
+    pedidos = ligacao.execute(consulta, (numero,)).fetchall()
+    ligacao.close()
+    if len(pedidos) == 0:
+        print("Não tem pedidos de renovação.")
+        return
+    for pedido in pedidos:
+        texto = f"{pedido['titulo']:<26}{pedido['estado']}"
+        if pedido["estado"] == "aprovado":
+            texto = texto + " (nova data: " + pedido["data_prevista"] + ")"
+        print(texto)
