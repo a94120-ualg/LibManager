@@ -223,3 +223,55 @@ def listar_pedidos_pendentes():
         print(f"{pedido['id']:<6}{pedido['nome']:<20}{pedido['titulo']:<26}"
               f"prazo atual: {pedido['data_prevista']}")
     return pedidos
+
+
+def decidir_pedido():
+    pedidos = listar_pedidos_pendentes()
+    if len(pedidos) == 0:
+        return
+    id_pedido = pedir_inteiro("Nº do pedido (0 para voltar): ")
+    if id_pedido == 0:
+        return
+    ligacao = ligar()
+    consulta = (
+        "SELECT e.id AS emprestimo, e.isbn, e.socio, e.data_prevista "
+        "FROM pedidos_renovacao p JOIN emprestimos e ON e.id = p.emprestimo "
+        "WHERE p.id = ? AND p.estado = 'pendente'"
+    )
+    pedido = ligacao.execute(consulta, (id_pedido,)).fetchone()
+    if pedido is None:
+        ligacao.close()
+        mostrar_erro("Pedido não encontrado.")
+        return
+    print("1. Aprovar")
+    print("2. Recusar")
+    decisao = pedir_inteiro("Opção: ")
+    if decisao == 1:
+        reservas = ligacao.execute(
+            "SELECT COUNT(*) AS total FROM reservas "
+            "WHERE isbn = ? AND socio != ?", (pedido["isbn"], pedido["socio"])
+        ).fetchone()
+        if reservas["total"] > 0:
+            mostrar_erro("o livro tem reservas de outros sócios. Recuse o pedido.")
+        else:
+            nova_data = somar_dias(pedido["data_prevista"], PRAZO_DIAS)
+            ligacao.execute(
+                "UPDATE emprestimos SET data_prevista = ? WHERE id = ?",
+                (nova_data, pedido["emprestimo"])
+            )
+            ligacao.execute(
+                "UPDATE pedidos_renovacao SET estado = 'aprovado' WHERE id = ?",
+                (id_pedido,)
+            )
+            ligacao.commit()
+            print("Renovação aprovada. Nova data de devolução: " + nova_data + ".")
+    elif decisao == 2:
+        ligacao.execute(
+            "UPDATE pedidos_renovacao SET estado = 'recusado' WHERE id = ?",
+            (id_pedido,)
+        )
+        ligacao.commit()
+        print("Renovação recusada.")
+    else:
+        mostrar_erro("Opção inválida.")
+    ligacao.close()
