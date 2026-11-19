@@ -202,3 +202,24 @@ def ver_pedidos_socio(numero):
         if pedido["estado"] == "aprovado":
             texto = texto + " (nova data: " + pedido["data_prevista"] + ")"
         print(texto)
+
+
+def listar_pedidos_pendentes():
+    ligacao = ligar()
+    consulta = (
+        "SELECT p.id, s.nome, l.titulo, e.data_prevista "
+        "FROM pedidos_renovacao p "
+        "JOIN emprestimos e ON e.id = p.emprestimo "
+        "JOIN socios s ON s.numero = e.socio "
+        "JOIN livros l ON l.isbn = e.isbn "
+        "WHERE p.estado = 'pendente' ORDER BY p.id"
+    )
+    pedidos = ligacao.execute(consulta).fetchall()
+    ligacao.close()
+    if len(pedidos) == 0:
+        print("Não há pedidos pendentes.")
+        return pedidos
+    for pedido in pedidos:
+        print(f"{pedido['id']:<6}{pedido['nome']:<20}{pedido['titulo']:<26}"
+              f"prazo atual: {pedido['data_prevista']}")
+    return pedidos
