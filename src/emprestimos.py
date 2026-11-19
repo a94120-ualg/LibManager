@@ -256,6 +256,8 @@ def decidir_pedido():
         ).fetchone()
         if reservas["total"] > 0:
             mostrar_erro("o livro tem reservas de outros sócios. Recuse o pedido.")
+        elif multas.socio_tem_multas(pedido["socio"]):
+            mostrar_erro("o sócio tem multas por pagar. Recuse o pedido.")
         else:
             nova_data = somar_dias(pedido["data_prevista"], PRAZO_DIAS)
             ligacao.execute(
