@@ -134,6 +134,7 @@ def menu_emprestimos():
         print("2. Devolver")
         print("3. Cancelar")
         print("4. Definir limite por sócio")
+        print("5. Pedidos de renovação")
         print("0. Voltar")
         opcao = pedir_inteiro("Opção: ")
         if opcao == 1:
@@ -144,6 +145,8 @@ def menu_emprestimos():
             cancelar_emprestimo()
         elif opcao == 4:
             definir_limite_socio()
+        elif opcao == 5:
+            decidir_pedido()
         elif opcao != 0:
             mostrar_erro("Opção inválida.")
 
