@@ -147,6 +147,7 @@ def menu_livros():
         print("2. Editar")
         print("3. Remover")
         print("4. Listar")
+        print("5. Ver histórico")
         print("0. Voltar")
         opcao = pedir_inteiro("Opção: ")
         if opcao == 1:
@@ -157,9 +158,10 @@ def menu_livros():
             remover_livro()
         elif opcao == 4:
             listar_livros()
+        elif opcao == 5:
+            ver_historico_livro()
         elif opcao != 0:
             mostrar_erro("Opção inválida.")
-
 
 def menu_pesquisa():
     opcao = -1
