@@ -1,6 +1,8 @@
 # Gestão de empréstimos e pedidos de renovação.
-from src.bd import ligar
 from src import livros, socios, multas
+from src.bd import ligar
+from src.utils import pedir_texto, pedir_inteiro, hoje, somar_dias, mostrar_erro
+
 
 PRAZO_DIAS = 14
 
@@ -13,10 +15,6 @@ def contar_emprestimos_ativos(numero):
     ligacao.close()
     return linha["total"]
 
-
-from src import livros, socios
-from src.bd import ligar
-from src.utils import pedir_texto, pedir_inteiro, hoje, somar_dias, mostrar_erro
 
 
 def registar_emprestimo():
@@ -116,11 +114,6 @@ def menu_emprestimos():
             definir_limite_socio()
         elif opcao != 0:
             mostrar_erro("Opção inválida.")
-
-
-def listar_emprestimos_ativos(numero):
-# Lista os empréstimos ativos de um sócio (ainda por implementar).
-    print("Em desenvolvimento.")
 
 
 def listar_emprestimos_ativos(numero):
